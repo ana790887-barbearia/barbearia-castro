@@ -1,4 +1,4 @@
-const CACHE='castro-entrega-v12';
+const CACHE='castro-push-tempo-real-v13';
 const ASSETS=['./','./index.html','./painel-barbeiro.html','./style.css','./client.js','./admin.js','./logo-castro.webp','./manifest.webmanifest','./manifest-barbeiro.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
