@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#061326">
+<meta name="description" content="Instale o aplicativo da Barbearia Castro e agende seu próximo corte pelo celular.">
+<link rel="icon" href="./icons/icon-192.png">
+<title>Barbearia Castro | Aplicativo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;color:#fff;background:linear-gradient(140deg,#061326,#0d315b,#07172c);min-height:100vh}
+.topline{height:6px;background:linear-gradient(90deg,#123e78 48%,white 52%,#e32636 52%)}
+.container{width:90%;max-width:1100px;margin:auto}
+header{padding:25px 0;display:flex;justify-content:space-between;align-items:center;gap:14px}
+.brand{font-weight:bold;letter-spacing:2px}
+.brand span{color:#ed3445}
+.hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:45px;padding:65px 0}
+.tag{font-size:12px;letter-spacing:3px;color:#e9eff8}
+h1{font-size:clamp(42px,6vw,68px);margin:22px 0;line-height:1}
+h1 span,.install-title span{color:#82b8f5}
+.description{font-size:17px;line-height:1.7;color:#d0dbea;margin-bottom:28px}
+.download{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f02f42,#c8172b);color:white;padding:19px 28px;border-radius:10px;font-weight:bold;font-size:16px;text-decoration:none;box-shadow:0 10px 30px #0005;transition:.2s;text-align:center}
+.download:hover,.download:focus-visible{transform:translateY(-3px)}
+.logo-area{background:#ffffff0d;border:1px solid #ffffff25;border-radius:25px;padding:20px;text-align:center;display:flex;align-items:center;justify-content:center;min-height:340px}
+.logo-area img{display:block;width:100%;max-width:420px;height:auto;max-height:440px;object-fit:contain;border-radius:12px}
+.features{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.feature{padding:11px 14px;background:#ffffff0c;border:1px solid #ffffff20;border-radius:8px;font-size:13px}
+.install-section{padding:65px 0;border-top:1px solid #ffffff20}
+.install-title{text-align:center;font-size:38px;margin:15px 0}
+.install-intro{text-align:center;color:#c6d4e6;line-height:1.7;margin:0 auto 35px;max-width:650px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:900px;margin:auto}
+.card{background:#ffffff0c;border:1px solid #ffffff25;border-radius:17px;padding:28px}
+.icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:bold;margin-bottom:18px}
+.android{background:#245b3b;color:#b9ffd0}
+.iphone{background:#244b78;color:#c5e1ff}
+.card h3{font-size:23px;margin-bottom:15px}
+.card ol{padding-left:22px;color:#d0dbea;line-height:1.8}
+.card li{margin-bottom:10px;padding-left:5px}
+.card strong{color:#fff}
+.note{text-align:center;color:#9fb0c6;font-size:12px;margin-top:25px}
+footer{border-top:1px solid #ffffff20;padding:28px 0;text-align:center;color:#9fb0c6;font-size:13px}
+footer strong{color:white}
+@media(max-width:750px){.hero{grid-template-columns:1fr;padding:40px 0;gap:30px}.logo-area{order:2;min-height:250px}.cards{grid-template-columns:1fr}.install-title{font-size:30px}header{padding:20px 0}.brand{font-size:14px}header .slogan{font-size:9px!important;max-width:120px;text-align:right}.download{width:100%}}
+</style>
+</head>
+<body>
+<div class="topline"></div>
+<div class="container">
+<header>
+<div class="brand">BARBEARIA <span>CASTRO</span></div>
+<div class="slogan" style="font-size:11px;letter-spacing:2px">ESTILO • PRECISÃO • ATITUDE</div>
+</header>
+<main>
+<section class="hero">
+<div>
+<div class="tag">SEU PRÓXIMO CORTE COMEÇA AQUI</div>
+<h1>Seu horário.<br><span>Do seu jeito.</span></h1>
+<p class="description">Agende seu atendimento na <strong>Barbearia Castro</strong> com praticidade. Acesse nosso aplicativo, escolha o melhor horário e deixe seu estilo com a gente.</p>
+<a class="download" href="./index.html">ACESSE O APP AQUI</a>
+<div class="features">
+<div class="feature">✓ Agendamento fácil</div>
+<div class="feature">✓ Escolha seu horário</div>
+<div class="feature">✓ Mais praticidade</div>
+</div>
+</div>
+<div class="logo-area"><img src="./logo-castro.webp" alt="Logo oficial da Barbearia Castro" width="420" height="420" loading="eager"></div>
+</section>
+<section class="install-section">
+<div style="text-align:center">
+<div class="tag">DISPONÍVEL PARA SEU CELULAR</div>
+<h2 class="install-title">Instale nosso <span>aplicativo!</span></h2>
+<p class="install-intro">A Barbearia Castro está disponível para Android e iPhone. Siga as instruções abaixo para adicionar nosso aplicativo à tela inicial do seu celular.</p>
+</div>
+<div class="cards">
+<div class="card">
+<div class="icon android">AND</div><h3>Android</h3>
+<ol>
+<li>Toque em <strong>ACESSE O APP AQUI</strong> e abra o aplicativo pelo <strong>Google Chrome</strong>.</li>
+<li>Toque nos <strong>três pontinhos</strong> no canto superior.</li>
+<li>Selecione <strong>Instalar aplicativo</strong> ou <strong>Adicionar à tela inicial</strong>.</li>
+<li>Confirme a instalação.</li>
+<li>Pronto! O aplicativo estará disponível na tela do seu celular.</li>
+</ol>
+</div>
+<div class="card">
+<div class="icon iphone">iOS</div><h3>iPhone</h3>
+<ol>
+<li>Toque em <strong>ACESSE O APP AQUI</strong> e abra o aplicativo pelo navegador <strong>Safari</strong>.</li>
+<li>Toque no botão <strong>Compartilhar</strong>.</li>
+<li>Escolha a opção <strong>Adicionar à Tela de Início</strong>.</li>
+<li>Toque em <strong>Adicionar</strong> para confirmar.</li>
+<li>Pronto! O aplicativo estará disponível na tela inicial.</li>
+</ol>
+</div>
+</div>
+<p class="note">As opções de instalação podem variar conforme o aparelho e a versão do navegador.</p>
+</section>
+</main>
+</div>
+<footer><strong>BARBEARIA CASTRO</strong><br><br>Seu estilo, nossa assinatura.</footer>
+</body>
+</html>
