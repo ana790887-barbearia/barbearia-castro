@@ -53,12 +53,29 @@ async function activateCastroClientPush(){
 }
 $('#enable-notifications').onclick=async()=>{
  const b=$('#enable-notifications');b.disabled=true;
- try{const n=await activateCastroClientPush();alert(n?'Notificações ativadas para seus agendamentos neste aparelho.':'Permissão ativada. Ao agendar, os lembretes serão vinculados automaticamente.')}catch(e){alert(e.message)}
+ try{const n=await activateCastroClientPush();castroRefreshClientSetup();alert(n?'Notificações ativadas para seus agendamentos neste aparelho.':'Permissão ativada. Ao agendar, os lembretes serão vinculados automaticamente.')}catch(e){alert(e.message)}
  finally{b.disabled=false}
 };
 $('#confirm-enable-reminders').onclick=async()=>{
  const b=$('#confirm-enable-reminders');b.disabled=true;
- try{const n=await activateCastroClientPush();$('#confirmation-push-status').textContent=n?'Lembretes ativados!':'Notificações permitidas. Confira o agendamento em Meus agendamentos.'}
+ try{const n=await activateCastroClientPush();castroRefreshClientSetup();$('#confirmation-push-status').textContent=n?'Lembretes ativados!':'Notificações permitidas. Confira o agendamento em Meus agendamentos.'}
  catch(e){$('#confirmation-push-status').textContent=e.message}
  finally{b.disabled=false}
 };
+
+function castroRefreshClientSetup(){
+ const installed=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+ const installCard=document.getElementById('install-card');
+ if(installCard)installCard.hidden=Boolean(installed);
+ const permission=typeof Notification!=='undefined'?Notification.permission:'default';
+ const enabled=permission==='granted';
+ const button=document.getElementById('enable-notifications');
+ if(button)button.hidden=enabled;
+ const reminderButton=document.getElementById('confirm-enable-reminders');
+ if(reminderButton)reminderButton.hidden=enabled;
+ const hint=document.getElementById('client-notification-status');
+ if(hint)hint.textContent=enabled?'✓ Notificações permitidas no Android.':'Instale o aplicativo e ative as notificações para receber lembretes.';
+}
+castroRefreshClientSetup();
+window.addEventListener('appinstalled',castroRefreshClientSetup);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)castroRefreshClientSetup()});
