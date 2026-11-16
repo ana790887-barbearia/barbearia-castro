@@ -75,7 +75,7 @@ function castroUpdatePushUI(message,active=false){
  const test=document.getElementById('test-push');
  if(status){status.textContent=message;status.setAttribute('data-active',String(active))}
  if(button){button.hidden=active;button.disabled=false}
- if(test)test.hidden=!active;
+ if(test)test.hidden=true;
 }
 async function castroTestLocalPush(){
  if(Notification.permission!=='granted')throw new Error('Permissão de notificação ainda não concedida.');
@@ -100,3 +100,15 @@ if(navigator.permissions?.query){
   state.addEventListener('change',activateWhenGranted);
  }).catch(()=>{});
 }
+
+
+function castroRefreshInstalledState(){
+ const installed=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+ const card=document.getElementById('install-card');
+ if(card)card.hidden=Boolean(installed);
+ const installButton=document.getElementById('install-app');
+ if(installButton)installButton.hidden=Boolean(installed);
+}
+castroRefreshInstalledState();
+window.addEventListener('appinstalled',castroRefreshInstalledState);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)castroRefreshInstalledState()});
