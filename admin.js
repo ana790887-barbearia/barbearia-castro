@@ -46,7 +46,7 @@ async function activateCastroAdminPush(){
  if(!('Notification'in window))throw new Error('Seu navegador não oferece notificações.');
  if(Notification.permission==='denied')throw new Error('Ative as notificações nas configurações do navegador.');
  const permission=await Notification.requestPermission();
- if(permission!=='granted')throw new Error('Permissão não concedida.');
+ if(permission!=='granted')throw new Error(permission==='default'?'O Android ainda não recebeu sua autorização. Confira o aviso de permissão do Chrome e toque em Permitir.':'Permissão de notificações não concedida.');
  const sub=await castroGetSubscription();await castroSavePush(sub,null,null,true);
 }
 $('#allow-push').onclick=async()=>{
@@ -88,3 +88,15 @@ document.getElementById('test-push').onclick=async()=>{
  catch(e){castroUpdatePushUI('Falha no teste: '+e.message,true)}
  finally{b.disabled=false}
 };
+
+if(navigator.permissions?.query){
+ navigator.permissions.query({name:'notifications'}).then(state=>{
+  const activateWhenGranted=()=>{
+   if(state.state==='granted'&&allowed){
+    activateCastroAdminPush().then(()=>castroUpdatePushUI('✓ Notificações ativadas e celular cadastrado.',true))
+     .catch(e=>castroUpdatePushUI('Falha ao concluir ativação: '+e.message,false));
+   }
+  };
+  state.addEventListener('change',activateWhenGranted);
+ }).catch(()=>{});
+}
