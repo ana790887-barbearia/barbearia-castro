@@ -17,3 +17,38 @@ $('#install-app').addEventListener('click',async()=>{
   const ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
   hint.textContent=ios?'No Safari, toque em Compartilhar e depois em Adicionar à Tela de Início.':'No Chrome, abra o menu ⋮ e selecione Instalar aplicativo ou Adicionar à tela inicial.';
 });
+
+
+
+const CASTRO_VAPID_PUBLIC='BJPargYiXeW2hMxME6aTA-itBvuu4-Ao6ttiI9vMzlesL92zyNgldOh3lKCnjaTKpW-pKoc1Fm3woEqqG569FkM';
+function castroPushKey(s){const b=atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4));return Uint8Array.from(b,c=>c.charCodeAt(0))}
+async function castroGetSubscription(){
+ if(!('serviceWorker'in navigator)||!('PushManager'in window)||!('Notification'in window))throw new Error('Seu navegador não oferece notificações push.');
+ const reg=await navigator.serviceWorker.ready;
+ let sub=await reg.pushManager.getSubscription();
+ if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:castroPushKey(CASTRO_VAPID_PUBLIC)});
+ return sub;
+}
+async function castroSavePush(sub,bookId=null,phone=null,isAdmin=false){
+ const json=sub.toJSON();
+ const {error}=await db.rpc('castro_register_push_subscription',{
+  p_endpoint:json.endpoint,p_p256dh:json.keys?.p256dh,p_auth_key:json.keys?.auth,
+  p_booking_id:bookId,p_phone:phone,p_as_admin:isAdmin
+ });
+ if(error)throw new Error(error.message);
+}
+
+
+async function activateCastroAdminPush(){
+ if(!allowed)throw new Error('Entre primeiro no painel.');
+ if(!('Notification'in window))throw new Error('Seu navegador não oferece notificações.');
+ if(Notification.permission==='denied')throw new Error('Ative as notificações nas configurações do navegador.');
+ const permission=await Notification.requestPermission();
+ if(permission!=='granted')throw new Error('Permissão não concedida.');
+ const sub=await castroGetSubscription();await castroSavePush(sub,null,null,true);
+}
+$('#allow-push').onclick=async()=>{
+ const b=$('#allow-push');b.disabled=true;
+ try{await activateCastroAdminPush();alert('Avisos ativados. Novos agendamentos e lembretes poderão chegar com o aplicativo fechado.')}catch(e){alert(e.message)}
+ finally{b.disabled=false}
+};
