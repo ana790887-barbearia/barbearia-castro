@@ -24,7 +24,8 @@ const CASTRO_VAPID_PUBLIC='BJPargYiXeW2hMxME6aTA-itBvuu4-Ao6ttiI9vMzlesL92zyNgld
 function castroPushKey(s){const b=atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4));return Uint8Array.from(b,c=>c.charCodeAt(0))}
 async function castroGetSubscription(){
  if(!('serviceWorker'in navigator)||!('PushManager'in window)||!('Notification'in window))throw new Error('Seu navegador não oferece notificações push.');
- const reg=await castroEnsureWorker();
+ await castroEnsureWorker();
+ const reg=await Promise.race([navigator.serviceWorker.ready,new Promise((_,reject)=>setTimeout(()=>reject(new Error('O Android não concluiu a ativação das notificações. Reabra o aplicativo e tente novamente.')),12000))]);
  if(!reg.pushManager)throw new Error('Seu Android não oferece Push API neste aplicativo.');
  let sub=await reg.pushManager.getSubscription();
  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:castroPushKey(CASTRO_VAPID_PUBLIC)});
@@ -50,7 +51,7 @@ async function activateCastroAdminPush(){
 }
 $('#allow-push').onclick=async()=>{
  const b=$('#allow-push');b.disabled=true;
- try{castroUpdatePushUI('Ativando notificações no Android...');await activateCastroAdminPush();castroUpdatePushUI('✓ Avisos ativados! Você pode fechar o aplicativo; os agendamentos continuarão sendo enviados ao celular.',true);await castroTestLocalPush()}catch(e){castroUpdatePushUI('Falha ao ativar: '+e.message,false);alert('Não foi possível ativar as notificações: '+e.message)}
+ try{castroUpdatePushUI('Ativando notificações no Android...');await activateCastroAdminPush();castroUpdatePushUI('✓ Avisos ativados! Você pode fechar o aplicativo; os agendamentos continuarão sendo enviados ao celular.',true);await castroTestLocalPush().catch(e=>castroUpdatePushUI('✓ Celular cadastrado. Não foi possível exibir o teste local: '+e.message,true))}catch(e){castroUpdatePushUI('Falha ao ativar: '+e.message,false);alert('Não foi possível ativar as notificações: '+e.message)}
  finally{b.disabled=false}
 };
 function castroAdminPushStatus(message){const el=document.querySelector('#push-status');if(el)el.textContent=message}
