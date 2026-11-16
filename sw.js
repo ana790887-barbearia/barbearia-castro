@@ -1,1 +1,10 @@
-const CACHE='castro-shell-v1';const ASSETS=['./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==location.origin)return;e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))});
+const CACHE='castro-entrega-v12';
+const ASSETS=['./','./index.html','./painel-barbeiro.html','./style.css','./client.js','./admin.js','./logo-castro.webp','./manifest.webmanifest','./manifest-barbeiro.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{
+  const u=new URL(event.request.url);if(event.request.method!=='GET'||u.origin!==self.location.origin)return;
+  event.respondWith((async()=>{try{const res=await fetch(event.request);if(res.ok){const cache=await caches.open(CACHE);cache.put(event.request,res.clone())}return res}catch(_){return await caches.match(event.request)||await caches.match('./index.html')||Response.error()}})());
+});
+self.addEventListener('push',event=>{let info={};try{info=event.data.json()}catch(_){}event.waitUntil(self.registration.showNotification(info.title||'Barbearia Castro',{body:info.body||'Você tem uma atualização.',icon:'./icons/icon-192.png',badge:'./icons/icon-192.png',data:{url:info.url||'./index.html'}}))});
+self.addEventListener('notificationclick',event=>{event.notification.close();const target=new URL(event.notification.data?.url||'./index.html',self.registration.scope).href;event.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(async ws=>{for(const c of ws)if(c.url.startsWith(self.registration.scope)){await c.focus();await c.navigate(target);return}return clients.openWindow(target)}))});

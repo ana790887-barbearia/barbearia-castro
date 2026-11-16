@@ -1,10 +1,13 @@
-BARBEARIA CASTRO - SITE E PAINEL SEPARADOS
-1. Clientes: index.html (não contém acesso ao painel).
-2. Barbeiro: painel-barbeiro.html (endereço separado, exige login Supabase e permissão admin_users).
-3. Instalação no celular: aplicativo web (PWA) em hospedagem HTTPS. No Android, menu do Chrome > Instalar app. No iPhone, Safari > Compartilhar > Adicionar à Tela de Início.
-4. Publique todos os arquivos e a pasta icons juntos, sem alterar os nomes, usando GitHub Pages ou outro host HTTPS gratuito.
-5. No Google Sites, incorpore o URL da página do cliente. Para instalar como app, recomende abrir o endereço direto da hospedagem no navegador; dentro do Google Sites, a instalação pode não aparecer.
-6. Painel: ainda precisa criar um usuário no Supabase Authentication e inserir o UUID dele na tabela admin_users. Não compartilhe senha nem chave secreta.
-7. TESTE antes de divulgar. Horários disponíveis: 09:00-11:30 e 13:00-18:30 a cada 30 min; o sistema atual reserva por horário inicial, sem bloqueio por duração de serviço.
-8. O sistema ainda não implementa antispam/verificação de telefone, e o modo offline não permite fazer reservas.
-9. O plano gratuito pode pausar após inatividade; o sistema depende de internet e Supabase ativo.
+BARBEARIA CASTRO – APP INSTALÁVEL
+
+Clientes: https://ana790887-barbearia.github.io/barbearia-castro/
+Barbeiro: https://ana790887-barbearia.github.io/barbearia-castro/painel-barbeiro.html
+
+ANDROID: abra no Chrome e use Instalar aplicativo / Adicionar à tela inicial.
+iPHONE: abra no Safari, Compartilhar > Adicionar à Tela de Início.
+
+O acesso do barbeiro é separado e exige e-mail, senha e autorização no banco.
+Para agendar e carregar serviços é necessária conexão com a Internet.
+A interface PWA básica pode abrir offline, mas agendamentos e mudanças exigem conexão.
+
+Avisos push requerem permissão explícita do aparelho e inscrição no app.
