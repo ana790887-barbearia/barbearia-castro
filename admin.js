@@ -134,14 +134,18 @@ async function castroWalkinServices(){
 }
 walkinDate.min=castroToday();walkinDate.value=castroToday();
 walkinDate.addEventListener('change',castroWalkinRefreshTimes);
-document.getElementById('walkin-open').onclick=async()=>{
- if(!allowed)return;
- walkinMsg.textContent='';
+document.getElementById('walkin-open').addEventListener('click',async()=>{
+ if(!allowed){alert('Entre no painel para agendar.');return}
+ const modal=document.getElementById('walkin-modal');
+ modal.hidden=false;
+ walkinMsg.textContent='Carregando serviços e horários...';
  walkinDate.min=castroToday();walkinDate.value=castroToday();
- await Promise.all([loadAppointments(),castroWalkinServices()]);
- castroWalkinRefreshTimes();
- document.getElementById('walkin-modal').hidden=false;
-};
+ try{
+  await Promise.all([loadAppointments(),castroWalkinServices()]);
+  castroWalkinRefreshTimes();
+  if(walkinTime.value)walkinMsg.textContent='';
+ }catch(error){walkinMsg.textContent='Erro ao carregar: '+error.message;console.error(error)}
+});
 document.getElementById('walkin-close').onclick=()=>document.getElementById('walkin-modal').hidden=true;
 walkinForm.onsubmit=async event=>{
  event.preventDefault();if(!allowed)return;
@@ -160,7 +164,7 @@ walkinForm.onsubmit=async event=>{
  button.disabled=false;
  if(error){walkinMsg.textContent=error.code==='23505'?'Este horário acabou de ser reservado. Escolha outro.':'Não foi possível agendar: '+error.message;await loadAppointments();castroWalkinRefreshTimes();return}
  walkinMsg.textContent='Agendamento presencial confirmado!';
- walkinForm.reset();walkinDate.value=date;
+ walkinForm.reset();walkinDate.value=date;await castroWalkinServices();
  await loadAppointments();castroWalkinRefreshTimes();
  setTimeout(()=>{document.getElementById('walkin-modal').hidden=true;walkinMsg.textContent=''},1200);
 };
