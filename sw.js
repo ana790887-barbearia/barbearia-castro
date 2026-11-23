@@ -1,9 +1,13 @@
-const CACHE='castro-alertas-v17';
+const CACHE='castro-alertas-v18';
 const ASSETS=['./','./index.html','./painel-barbeiro.html','./style.css','./client.js','./admin.js','./logo-castro.webp','./manifest.webmanifest','./manifest-barbeiro.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
   const u=new URL(event.request.url);if(event.request.method!=='GET'||u.origin!==self.location.origin)return;
+  // HTML sempre consulta a versão publicada, evitando links antigos no app instalado.
+  if(event.request.mode==='navigate'||u.pathname.endsWith('/index.html')||u.pathname.endsWith('/painel-barbeiro.html')){
+    event.respondWith(fetch(event.request,{cache:'no-store'}).then(res=>res).catch(()=>caches.match(event.request)));return;
+  }
   event.respondWith((async()=>{try{const res=await fetch(event.request);if(res.ok){const cache=await caches.open(CACHE);cache.put(event.request,res.clone())}return res}catch(_){return await caches.match(event.request)||await caches.match('./index.html')||Response.error()}})());
 });
 self.addEventListener('push',event=>{
