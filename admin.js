@@ -109,3 +109,58 @@ function castroRefreshInstalledState(){
 castroRefreshInstalledState();
 window.addEventListener('appinstalled',castroRefreshInstalledState);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)castroRefreshInstalledState()});
+
+/* Agendamento presencial — acesso exclusivo do barbeiro autenticado. */
+const walkinForm=document.getElementById('walkin-form');
+const walkinDate=document.getElementById('walkin-date');
+const walkinTime=document.getElementById('walkin-time');
+const walkinService=document.getElementById('walkin-service');
+const walkinMsg=document.getElementById('walkin-message');
+function castroToday(){return sp()}
+function castroWalkinRefreshTimes(){
+ const date=walkinDate.value, now=castroToday();
+ const localTime=new Intl.DateTimeFormat('en-GB',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+ const taken=new Set(appointments.filter(a=>a.status==='confirmed'&&a.appointment_date===date).map(a=>String(a.appointment_time).slice(0,5)));
+ walkinTime.replaceChildren();
+ for(const t of allTimes){const option=new Option(t,t);option.disabled=taken.has(t)||(date===now&&t<=localTime);walkinTime.add(option)}
+ const first=[...walkinTime.options].find(o=>!o.disabled);walkinTime.value=first?first.value:'';
+ if(!first)walkinMsg.textContent='Não há horários disponíveis nesta data.';
+}
+async function castroWalkinServices(){
+ const {data,error}=await db.from('shop_services').select('id,name,is_plan').eq('active',true).order('sort_order');
+ walkinService.replaceChildren();
+ if(error){walkinMsg.textContent='Não foi possível carregar os serviços.';return}
+ for(const s of data||[]){const option=new Option(s.name,s.name);option.dataset.plan=String(s.is_plan);walkinService.add(option)}
+}
+walkinDate.min=castroToday();walkinDate.value=castroToday();
+walkinDate.addEventListener('change',castroWalkinRefreshTimes);
+document.getElementById('walkin-open').onclick=async()=>{
+ if(!allowed)return;
+ walkinMsg.textContent='';
+ walkinDate.min=castroToday();walkinDate.value=castroToday();
+ await Promise.all([loadAppointments(),castroWalkinServices()]);
+ castroWalkinRefreshTimes();
+ document.getElementById('walkin-modal').hidden=false;
+};
+document.getElementById('walkin-close').onclick=()=>document.getElementById('walkin-modal').hidden=true;
+walkinForm.onsubmit=async event=>{
+ event.preventDefault();if(!allowed)return;
+ const button=walkinForm.querySelector('[type=submit]');button.disabled=true;walkinMsg.textContent='Salvando...';
+ const date=walkinDate.value,time=walkinTime.value,name=document.getElementById('walkin-name').value.trim();
+ const phone=document.getElementById('walkin-phone').value.replace(/\D/g,'');
+ const service=walkinService.selectedOptions[0];
+ const today=castroToday();
+ const localTime=new Intl.DateTimeFormat('en-GB',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+ const maxDate=new Date(today+'T12:00:00');maxDate.setDate(maxDate.getDate()+90);
+ const maxStr=maxDate.getFullYear()+'-'+String(maxDate.getMonth()+1).padStart(2,'0')+'-'+String(maxDate.getDate()).padStart(2,'0');
+ if(name.length<2||phone.length<10||phone.length>13||!service||!time||date<today||date>maxStr||(date===today&&time<=localTime)||(service.dataset.plan==='true'&&new Date(date+'T12:00:00').getDay()%6===0)){
+  walkinMsg.textContent='Confira nome, telefone, serviço, data e horário disponível.';button.disabled=false;return;
+ }
+ const {error}=await db.from('appointments').insert({customer_name:name,customer_phone:phone,service_name:service.text,appointment_date:date,appointment_time:time,status:'confirmed',notes:'Agendamento presencial pelo barbeiro'});
+ button.disabled=false;
+ if(error){walkinMsg.textContent=error.code==='23505'?'Este horário acabou de ser reservado. Escolha outro.':'Não foi possível agendar: '+error.message;await loadAppointments();castroWalkinRefreshTimes();return}
+ walkinMsg.textContent='Agendamento presencial confirmado!';
+ walkinForm.reset();walkinDate.value=date;
+ await loadAppointments();castroWalkinRefreshTimes();
+ setTimeout(()=>{document.getElementById('walkin-modal').hidden=true;walkinMsg.textContent=''},1200);
+};
